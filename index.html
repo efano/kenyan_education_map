@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Kenyan Student Attrition Rates</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+    <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            color: #494949;
+            font-size: 1em;
+            font-family: "Work Sans", sans-serif;
+        }
+        
+        #side-panel {
+            position: absolute;
+            z-index: 500;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 30%;
+            background: rgba(26, 26, 26, 0.85);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            overflow-y: scroll;
+        }
+        
+        .sideText_h2 {
+            float: left;
+            color: whitesmoke;
+            padding: 0px 15px 0px 15px;
+            margin: 15px 15px 5px 15px;
+            font-size: 26px;
+        }
+        
+        .sideText_h3 {
+            float: left;
+            color: whitesmoke;
+            padding: 0px 15px 0px 15px;
+            margin: 10px 15px 10px 15px;
+            font-size: 18px;
+        }
+        
+        .sideText_p {
+            float: left;
+            font-size: 14px;
+            color: whitesmoke;
+            padding: 0px 15px 0px 15px;
+            margin: 5px 15px 4px 15px;
+        }
+        
+        .sideText_final {
+            float: left;
+            font-size: 14px;
+            color: whitesmoke;
+            padding: 0px 15px 20px 15px;
+            margin: 5px 15px 20px 15px;
+        }
+        
+        .side_img {
+            float: left;
+            margin: 10px 0px 10px 35px;
+            width: 100%;
+            height: auto;
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        #ui-slider {
+            position: absolute;
+            color: whitesmoke;
+            z-index: 700;
+            bottom: 30px;
+            right: 10px;
+            background: whitesmoke;
+            opacity: 1;
+            border: 1px solid #a8a8a8;
+            border-radius: 5px;
+            padding: 5px 10px 3px 10px;
+        }
+        
+        .slider {
+            width: 26px;
+        }
+        
+        .center {
+            text-align: middle;
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 30px;
+            height: 15px;
+            background: #ccc;
+            border-radius: 18px;
+            border: 1px solid #a8a8a8;
+            box-shadow: 0 1px 1px rgba(0, 0, 0.2, 0.2);
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 12px;
+            background-color: whitesmoke;
+            border: 1px solid #a8a8a8;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #ccc;
+        }
+        
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #474747;
+        }
+        
+        #info {
+            position: absolute;
+            max-width: 200px;
+            display: none;
+            background: whitesmoke;
+            opacity: 0.95;
+            border: 2px solid whitesmoke;
+            border-radius: 5px;
+            padding: 2px 6px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        
+        #info p {
+            margin: 3px 0 4px;
+            font-size: 14px;
+        }
+        
+        .girls {
+            color: #dd3010;
+        }
+        
+        .boys {
+            color: #1C9BAE;
+        }
+        
+        #info span:last-child {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        a {
+            color: #1C9BAE;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .portfolioLink {
+            color: #dd3010;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='side-panel'>
+        <h2 class=sideText_h2>Student Attrition Rates in Kenya</h2>
+        <h3 class=sideText_h3>2014 Primary and Secondary Enrollment by Gender and County</h3>
+        <p class=sideText_p>This map visually displays data published in Kenya's Ministry of Education, Science and Technology's <a target="_blank" href="http://www.kicd.ac.ke/images/ICT/2014BasicEducationStatisticalBooklet.pdf"><i>2014 Basic Education Statistical Booklet,</i></a> and compares primary (grades 1-8) and secondary (grades 9-12) enrollment totals of girls and boys by county. Data for this analysis were collected as part of the 2014 national schools census. The size of each circle on the map corresponds to countywide enrollment, where larger circles represent greater enrollment totals. Hovering over the circles will display the numerical enrollment total per county. Each symbol is apportioned and assigned a color by gender: </p>
+        <p class=side_img><img src="graphic.svg" alt="legend"></p>
+        <p class=sideText_p>High dropout rates are observed when toggling between the primary and secondary educational levels. According to the statistical booklet, the last two grades of primary school encounter the highest percentage of dropouts with grade seven recording 13.6% and grade eight recording 23.1%. Although the annual trend is improving, gender parity has not yet been achieved in both primary and secondary institutions. Cross county disparities remain evident, with arid and semi-arid counties recording the highest levels.</p>
+        <p class=sideText_p>The data used for this map were obtained from the <a target="_blank" href="https://opendata.go.ke/">Kenya Open Data Portal</a> and the <a target="_blank" href="http://www.kicd.ac.ke/images/ICT/2014BasicEducationStatisticalBooklet.pdf"><i>2014 Basic Education Statistical Booklet.</i></a></p>
+        <p class=sideText_final>Map design and data analysis by <a class=portfolioLink target="_blank" href="https://efano.github.io/"> Lis Fano </a></p>
+    </div>
+    <div id='map'></div>
+    <!-- slider -->
+    <div id="ui-slider">
+        <label class=center> <span class="textLeft">Primary</span>
+            <input type="range" min="1" , max="2" , value="1" , step="1" class="slider"> </input> <span class="textRight">Secondary</span> </label>
+    </div>
+    <!-- infoWindow-->
+    <div id="info">
+        <p>County: <span></span></p>
+        <hr>
+        <p class="girls">Girls: <span></span></p>
+        <p class="boys">Boys: <span></span></p>
+    </div>
+    <!-- end infoWindow -->
+    <script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoibGlzZmFubyIsImEiOiJjaXNnYzEzMTgwMXUwMnRydGt0eDR1c2JhIn0.fqNRiLiAZk9AbOSao4hAqw';
+        var map = L.mapbox.map('map', 'mapbox.light', {
+            center: [-.25, 36]
+            , zoom: 7
+            , zoomControl: false
+            , minZoom: 6
+            , maxZoom: 9
+            , maxBounds: L.latLngBounds([-6.22, 27.72], [5.76, 47.83])
+        });
+        map.addControl(L.control.zoom({
+            position: 'topright'
+        }));
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // global variables
+        //
+        var currentSchool = 1;
+        var counties;
+        var girls;
+        var boys;
+        var scaleFactor = .6;
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // load datasets
+        //
+        omnivore.csv('kenya_education_2014.csv').on('ready', function (e) {
+            $.getJSON('kenya_counties.json', function (data) {
+                drawMap(e.target.toGeoJSON(), data)
+            });
+        }).on('error', function (e) {
+            console.log(e.error[0].message);
+        });
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // draw map/symbols
+        //
+        function drawMap(schoolData, countyData) {
+            counties = L.geoJson(countyData, {
+                style: function (feature) {
+                    return {
+                        weight: 0
+                        , color: '#FCFFF5'
+                        , fillColor: '#FCFFF5'
+                        , fillOpacity: .3
+                    };
+                }
+            }).addTo(map);
+            girls = L.geoJson(schoolData, {
+                pointToLayer: function (feature, layer) {
+                    return L.circleMarker(layer, {
+                        color: '#dd3010'
+                        , opacity: 1
+                        , weight: 3
+                        , fillOpacity: 0
+                        , radius: calcRadius(feature.properties.FT1)
+                    });
+                }
+            }).addTo(map);
+            boys = L.geoJson(schoolData, {
+                pointToLayer: function (feature, layer) {
+                    return L.circleMarker(layer, {
+                        color: '#1C9BAE'
+                        , fillColor: '#494949'
+                        , opacity: 1
+                        , weight: 3
+                        , fillOpacity: 0
+                        , radius: calcRadius(feature.properties.MT1)
+                    });
+                }
+            }).addTo(map);
+            //
+            //
+            sequenceUI();
+            infoWindow();
+            updateSymbols();
+            //
+            // bind counties/mouseovers
+            boys.on('mouseover', function (e) {
+                var props = e.layer.feature.properties;
+                //
+                counties.eachLayer(function (layer) {
+                    //
+                    if (props.COUNTY == layer.feature.properties.COUNTY) {
+                        layer.setStyle({
+                            weight: 2
+                            , color: '#494949'
+                            , fillColor: '#494949'
+                            , fillOpacity: .3
+                        });
+                    }
+                });
+            });
+            boys.on('mouseout', function (layer) {
+                counties.eachLayer(function (layer) {
+                    layer.setStyle({
+                        weight: 0
+                        , color: '#FCFFF5'
+                        , fillColor: '#FCFFF5'
+                        , fillOpacity: .3
+                    });
+                });
+            });
+        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // resizes symbols
+        //
+        function updateSymbols() {
+            girls.eachLayer(function (layer) {
+                layer.setRadius(calcRadius(layer.feature.properties['FT' + currentSchool]));
+            });
+            boys.eachLayer(function (layer) {
+                layer.setRadius(calcRadius(layer.feature.properties['MT' + currentSchool]));
+            });
+        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // radius formula
+        //
+        function calcRadius(val) {
+            var radius = Math.sqrt(val / Math.PI);
+            return radius * .2;
+        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // jquery slider action
+        //
+        /*function sequenceUI(girls, boys) { $('.slider').on('input change', function () { updateSymbols(girls, boys, $(this).val()); }); }*/
+        function sequenceUI() {
+            $('.slider').on('input change', function () {
+                currentSchool = $(this).val();
+                updateSymbols();
+            });
+        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // infoWindow
+        //
+        function infoWindow() {
+            var info = $('#info');
+            boys.on('mouseover', function (e) {
+                info.show();
+                var props = e.layer.feature.properties;
+                $('#info span').text(props.COUNTY);
+                //
+                $(".girls span:first-child").text(props['FT' + String(currentSchool)].toLocaleString());
+                //
+                $(".boys span:first-child").text(props['MT' + String(currentSchool)].toLocaleString());
+                //
+                e.layer.setStyle({
+                    fillOpacity: .3
+                });
+            });
+            boys.on('mouseout', function (e) {
+                info.hide();
+                e.layer.setStyle({
+                    fillOpacity: 0
+                });
+            });
+            // set infoWindow position to county location instead of static
+            $(document).mousemove(function (e) {
+                // first offset from the mouse position of the info window
+                info.css({
+                    "left": e.pageX + 6
+                    , "top": e.pageY - info.height() - 15
+                });
+                // if it crashes into the top, flip it lower right
+                if (info.offset().top < 4) {
+                    info.css({
+                        "top": e.pageY + 15
+                    });
+                }
+                // do the same for crashing into the right
+                if (info.offset().left + info.width() >= $(document).width() - 40) {
+                    info.css({
+                        "left": e.pageX - info.width() - 30
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
