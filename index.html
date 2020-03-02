@@ -20,20 +20,20 @@
             font-size: 1em;
             font-family: "Work Sans", sans-serif;
         }
-        
+
         #side-panel {
             position: absolute;
             z-index: 500;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 30%;
+            width: 350px;
             background: rgba(26, 26, 26, 0.85);
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
             overflow-y: scroll;
         }
-        
+
         .sideText_h2 {
             float: left;
             color: whitesmoke;
@@ -41,7 +41,7 @@
             margin: 15px 15px 5px 15px;
             font-size: 26px;
         }
-        
+
         .sideText_h3 {
             float: left;
             color: whitesmoke;
@@ -49,7 +49,7 @@
             margin: 10px 15px 10px 15px;
             font-size: 18px;
         }
-        
+
         .sideText_p {
             float: left;
             font-size: 14px;
@@ -57,7 +57,7 @@
             padding: 0px 15px 0px 15px;
             margin: 5px 15px 4px 15px;
         }
-        
+
         .sideText_final {
             float: left;
             font-size: 14px;
@@ -65,14 +65,14 @@
             padding: 0px 15px 20px 15px;
             margin: 5px 15px 20px 15px;
         }
-        
+
         .side_img {
             float: left;
             margin: 10px 0px 10px 35px;
             width: 100%;
             height: auto;
         }
-        
+
         #map {
             position: absolute;
             top: 0;
@@ -80,7 +80,7 @@
             right: 0;
             width: 100%;
         }
-        
+
         #ui-slider {
             position: absolute;
             color: whitesmoke;
@@ -93,19 +93,19 @@
             border-radius: 5px;
             padding: 5px 10px 3px 10px;
         }
-        
+
         .slider {
             width: 26px;
         }
-        
+
         .center {
             text-align: middle;
         }
-        
+
         input[type=range] {
             -webkit-appearance: none;
         }
-        
+
         input[type=range]::-webkit-slider-runnable-track {
             width: 30px;
             height: 15px;
@@ -114,7 +114,7 @@
             border: 1px solid #a8a8a8;
             box-shadow: 0 1px 1px rgba(0, 0, 0.2, 0.2);
         }
-        
+
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 12px;
@@ -124,21 +124,21 @@
             border: 1px solid #a8a8a8;
             box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
         }
-        
+
         input[type=range]:focus {
             outline: none;
         }
-        
+
         input[type=range]:focus::-webkit-slider-runnable-track {
             background: #ccc;
         }
-        
+
         label {
             font-size: 14px;
             font-weight: bold;
             color: #474747;
         }
-        
+
         #info {
             position: absolute;
             max-width: 200px;
@@ -150,36 +150,37 @@
             padding: 2px 6px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
-        
+
         #info p {
             margin: 3px 0 4px;
             font-size: 14px;
         }
-        
+
         .girls {
             color: #dd3010;
         }
-        
+
         .boys {
             color: #1C9BAE;
         }
-        
+
         #info span:last-child {
             font-size: 1.1em;
             font-weight: 500;
         }
-        
+
         a {
             color: #1C9BAE;
             text-decoration: none;
             font-weight: 600;
         }
-        
+
         .portfolioLink {
             color: #dd3010;
             text-decoration: none;
             font-weight: 600;
         }
+
     </style>
 </head>
 
@@ -210,12 +211,12 @@
     <script>
         L.mapbox.accessToken = 'pk.eyJ1IjoibGlzZmFubyIsImEiOiJjaXNnYzEzMTgwMXUwMnRydGt0eDR1c2JhIn0.fqNRiLiAZk9AbOSao4hAqw';
         var map = L.mapbox.map('map', 'mapbox.light', {
-            center: [-.25, 36]
-            , zoom: 7
-            , zoomControl: false
-            , minZoom: 6
-            , maxZoom: 9
-            , maxBounds: L.latLngBounds([-6.22, 27.72], [5.76, 47.83])
+            center: [-.25, 36],
+            zoom: 7,
+            zoomControl: false,
+            minZoom: 6,
+            maxZoom: 9,
+            maxBounds: L.latLngBounds([-6.22, 27.72], [5.76, 47.83])
         });
         map.addControl(L.control.zoom({
             position: 'topright'
@@ -231,11 +232,11 @@
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // load datasets
         //
-        omnivore.csv('kenya_education_2014.csv').on('ready', function (e) {
-            $.getJSON('kenya_counties.json', function (data) {
+        omnivore.csv('kenya_education_2014.csv').on('ready', function(e) {
+            $.getJSON('kenya_counties.json', function(data) {
                 drawMap(e.target.toGeoJSON(), data)
             });
-        }).on('error', function (e) {
+        }).on('error', function(e) {
             console.log(e.error[0].message);
         });
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -243,35 +244,35 @@
         //
         function drawMap(schoolData, countyData) {
             counties = L.geoJson(countyData, {
-                style: function (feature) {
+                style: function(feature) {
                     return {
-                        weight: 0
-                        , color: '#FCFFF5'
-                        , fillColor: '#FCFFF5'
-                        , fillOpacity: .3
+                        weight: 0,
+                        color: '#FCFFF5',
+                        fillColor: '#FCFFF5',
+                        fillOpacity: .3
                     };
                 }
             }).addTo(map);
             girls = L.geoJson(schoolData, {
-                pointToLayer: function (feature, layer) {
+                pointToLayer: function(feature, layer) {
                     return L.circleMarker(layer, {
-                        color: '#dd3010'
-                        , opacity: 1
-                        , weight: 3
-                        , fillOpacity: 0
-                        , radius: calcRadius(feature.properties.FT1)
+                        color: '#dd3010',
+                        opacity: 1,
+                        weight: 3,
+                        fillOpacity: 0,
+                        radius: calcRadius(feature.properties.FT1)
                     });
                 }
             }).addTo(map);
             boys = L.geoJson(schoolData, {
-                pointToLayer: function (feature, layer) {
+                pointToLayer: function(feature, layer) {
                     return L.circleMarker(layer, {
-                        color: '#1C9BAE'
-                        , fillColor: '#494949'
-                        , opacity: 1
-                        , weight: 3
-                        , fillOpacity: 0
-                        , radius: calcRadius(feature.properties.MT1)
+                        color: '#1C9BAE',
+                        fillColor: '#494949',
+                        opacity: 1,
+                        weight: 3,
+                        fillOpacity: 0,
+                        radius: calcRadius(feature.properties.MT1)
                     });
                 }
             }).addTo(map);
@@ -282,28 +283,28 @@
             updateSymbols();
             //
             // bind counties/mouseovers
-            boys.on('mouseover', function (e) {
+            boys.on('mouseover', function(e) {
                 var props = e.layer.feature.properties;
                 //
-                counties.eachLayer(function (layer) {
+                counties.eachLayer(function(layer) {
                     //
                     if (props.COUNTY == layer.feature.properties.COUNTY) {
                         layer.setStyle({
-                            weight: 2
-                            , color: '#494949'
-                            , fillColor: '#494949'
-                            , fillOpacity: .3
+                            weight: 2,
+                            color: '#494949',
+                            fillColor: '#494949',
+                            fillOpacity: .3
                         });
                     }
                 });
             });
-            boys.on('mouseout', function (layer) {
-                counties.eachLayer(function (layer) {
+            boys.on('mouseout', function(layer) {
+                counties.eachLayer(function(layer) {
                     layer.setStyle({
-                        weight: 0
-                        , color: '#FCFFF5'
-                        , fillColor: '#FCFFF5'
-                        , fillOpacity: .3
+                        weight: 0,
+                        color: '#FCFFF5',
+                        fillColor: '#FCFFF5',
+                        fillOpacity: .3
                     });
                 });
             });
@@ -312,10 +313,10 @@
         // resizes symbols
         //
         function updateSymbols() {
-            girls.eachLayer(function (layer) {
+            girls.eachLayer(function(layer) {
                 layer.setRadius(calcRadius(layer.feature.properties['FT' + currentSchool]));
             });
-            boys.eachLayer(function (layer) {
+            boys.eachLayer(function(layer) {
                 layer.setRadius(calcRadius(layer.feature.properties['MT' + currentSchool]));
             });
         }
@@ -331,7 +332,7 @@
         //
         /*function sequenceUI(girls, boys) { $('.slider').on('input change', function () { updateSymbols(girls, boys, $(this).val()); }); }*/
         function sequenceUI() {
-            $('.slider').on('input change', function () {
+            $('.slider').on('input change', function() {
                 currentSchool = $(this).val();
                 updateSymbols();
             });
@@ -341,7 +342,7 @@
         //
         function infoWindow() {
             var info = $('#info');
-            boys.on('mouseover', function (e) {
+            boys.on('mouseover', function(e) {
                 info.show();
                 var props = e.layer.feature.properties;
                 $('#info span').text(props.COUNTY);
@@ -354,18 +355,18 @@
                     fillOpacity: .3
                 });
             });
-            boys.on('mouseout', function (e) {
+            boys.on('mouseout', function(e) {
                 info.hide();
                 e.layer.setStyle({
                     fillOpacity: 0
                 });
             });
             // set infoWindow position to county location instead of static
-            $(document).mousemove(function (e) {
+            $(document).mousemove(function(e) {
                 // first offset from the mouse position of the info window
                 info.css({
-                    "left": e.pageX + 6
-                    , "top": e.pageY - info.height() - 15
+                    "left": e.pageX + 6,
+                    "top": e.pageY - info.height() - 15
                 });
                 // if it crashes into the top, flip it lower right
                 if (info.offset().top < 4) {
@@ -381,6 +382,7 @@
                 }
             });
         }
+
     </script>
 </body>
 
